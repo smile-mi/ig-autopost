@@ -1,0 +1,25 @@
+name: publish-instagram
+on:
+  push:
+    branches: [main]
+    paths: ["posts/**"]
+  workflow_dispatch:
+concurrency: { group: ig-publish, cancel-in-progress: false }
+permissions: { contents: write }
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 게시
+        env:
+          IG_TOKEN: ${{ secrets.IG_TOKEN }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          REPO: ${{ github.repository }}
+          MAX_ITEMS: ${{ vars.MAX_ITEMS || '10' }}
+        run: python3 scripts/publish.py
+      - name: 게시 기록 저장(중복 방지)
+        run: |
+          git config user.name "ig-autopost"; git config user.email "ig-autopost@users.noreply.github.com"
+          git add posts/*/published.json || true
+          git diff --cached --quiet || (git commit -m "posted" && git push)
