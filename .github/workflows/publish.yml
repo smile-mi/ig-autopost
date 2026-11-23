@@ -11,10 +11,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: 토큰 확인(계정 이름만 출력)
+        env:
+          IG_TOKEN: ${{ secrets.IG_TOKEN }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+        run: |
+          curl -s -G "https://graph.facebook.com/v21.0/$IG_USER_ID" --data-urlencode "fields=username" --data-urlencode "access_token=$IG_TOKEN"; echo
       - name: 게시
         env:
           IG_TOKEN: ${{ secrets.IG_TOKEN }}
           IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          IG_API_BASE: https://graph.facebook.com/v21.0
           REPO: ${{ github.repository }}
           MAX_ITEMS: ${{ vars.MAX_ITEMS || '10' }}
         run: python3 scripts/publish.py
