@@ -16,7 +16,7 @@ jobs:
           IG_TOKEN: ${{ secrets.IG_TOKEN }}
           IG_USER_ID: ${{ secrets.IG_USER_ID }}
         run: |
-          curl -s -G "https://graph.facebook.com/v21.0/$IG_USER_ID" --data-urlencode "fields=username" --data-urlencode "access_token=$IG_TOKEN"; echo
+          R=$(curl -s -G "https://graph.facebook.com/v21.0/$IG_USER_ID" --data-urlencode "fields=username" --data-urlencode "access_token=$IG_TOKEN"); echo "토큰 확인 결과: $R" >> $GITHUB_STEP_SUMMARY; echo "$R" | grep -q username
       - name: 게시
         env:
           IG_TOKEN: ${{ secrets.IG_TOKEN }}
